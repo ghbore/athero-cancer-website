@@ -1,0 +1,13 @@
+SKCM:
+  file: skcm.csv
+  organism: human
+  column:
+    ensembl: ensembl gene id
+    logFC: log2FoldChange
+    pval: p.value
+    padj: adj P value
+  metadata:
+    source: oncLnc
+    description: xxx
+    formula: Surv(time, event) ~ gene + age + gender
+    filtration: FDR < 5% & abs(logFC) > 3%
