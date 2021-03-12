@@ -160,10 +160,18 @@ function (input, output, session){
     
     output$gene_pca <- renderPlotly({
         dplyr::mutate(GENE_DIM$pca,
+            class = case_when(
+                id %in% ATHERO_DATASET ~ "athero",
+                id %in% CANCER_DATASET ~ "cancer",
+                TRUE ~ "NA"
+            ),
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~PC_1, y = ~PC_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers"
+                hoverinfo = "skip", type = "scatter", mode = "markers",
+                marker = list(
+                    color = ~ifelse(class == "athero", "red", "black")
+                )
             ) %>%
             add_annotations(text = ~unname(id)) %>%
             config(editable = TRUE)
@@ -171,10 +179,18 @@ function (input, output, session){
 
     output$gene_umap <- renderPlotly({
         dplyr::mutate(GENE_DIM$umap,
+            class = case_when(
+                id %in% ATHERO_DATASET ~ "athero",
+                id %in% CANCER_DATASET ~ "cancer",
+                TRUE ~ "NA"
+            ),
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~UMAP_1, y = ~UMAP_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers"
+                hoverinfo = "skip", type = "scatter", mode = "markers",
+                marker = list(
+                    color = ~ifelse(class == "athero", "red", "black")
+                )
             ) %>%
             add_annotations(text = ~unname(id)) %>%
             config(editable = TRUE)
@@ -258,10 +274,18 @@ function (input, output, session){
     
     output$pathway_pca <- renderPlotly({
         dplyr::mutate(PATHWAY_DIM[[input$pathway_db_sel]]$pca,
+            class = case_when(
+                id %in% ATHERO_DATASET ~ "athero",
+                id %in% CANCER_DATASET ~ "cancer",
+                TRUE ~ "NA"
+            ),
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~PC_1, y = ~PC_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers"
+                hoverinfo = "skip", type = "scatter", mode = "markers",
+                marker = list(
+                    color = ~ifelse(class == "athero", "red", "black")
+                )
             ) %>%
             add_annotations(text = ~unname(id)) %>%
             config(editable = TRUE)
@@ -269,10 +293,18 @@ function (input, output, session){
     
     output$pathway_umap <- renderPlotly({
         dplyr::mutate(PATHWAY_DIM[[input$pathway_db_sel]]$umap,
+            class = case_when(
+                id %in% ATHERO_DATASET ~ "athero",
+                id %in% CANCER_DATASET ~ "cancer",
+                TRUE ~ "NA"
+            ),
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~UMAP_1, y = ~UMAP_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers"
+                hoverinfo = "skip", type = "scatter", mode = "markers",
+                marker = list(
+                    color = ~ifelse(class == "athero", "red", "black")
+                )
             ) %>%
             add_annotations(text = ~unname(id)) %>%
             config(editable = TRUE)
