@@ -108,22 +108,22 @@ function (input, output, session){
             )
     })
 
-    output$gene_matrix_heatmap <- renderPlotly({
-        mtx <- GENE_DIM$scaled %>%
-            `rownames<-`(with(GENE_MATRIX, paste(ensembl, symbol, sep="-"))) %>%
-            `colnames<-`(DATASET_NAME_MAP$display[colnames(.)])
-        plot_ly(
-            x = colnames(mtx),
-            y = rownames(mtx),
-            z = mtx,
-            colors = colorRamp(c("blue", "yellow", "red")),
-            type = "heatmap"
-        ) %>%
-            layout(
-                xaxis = list(title = ""),
-                yaxis = list(title = "")
-            )
-    })
+    # output$gene_matrix_heatmap <- renderPlotly({
+    #     mtx <- GENE_DIM$scaled %>%
+    #         `rownames<-`(with(GENE_MATRIX, paste(ensembl, symbol, sep="-"))) %>%
+    #         `colnames<-`(DATASET_NAME_MAP$display[colnames(.)])
+    #     plot_ly(
+    #         x = colnames(mtx),
+    #         y = rownames(mtx),
+    #         z = mtx,
+    #         colors = colorRamp(c("blue", "yellow", "red")),
+    #         type = "heatmap"
+    #     ) %>%
+    #         layout(
+    #             xaxis = list(title = ""),
+    #             yaxis = list(title = "")
+    #         )
+    # })
 
     output$gene_dist_heatmap <- renderPlotly({
         mtx <- GENE_DIM$dist %>%

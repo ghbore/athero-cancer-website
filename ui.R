@@ -60,7 +60,7 @@ dashboardPage(
 
             tabItem("geneLevel",
                 tabsetPanel(
-                    tabPanel("matrix", plotlyOutput("gene_matrix_heatmap")),
+                    # tabPanel("matrix", plotlyOutput("gene_matrix_heatmap")),
                     tabPanel("dist", plotlyOutput("gene_dist_heatmap")),
                     tabPanel("PCA", plotlyOutput("gene_pca")),
                     tabPanel("UMAP", plotlyOutput("gene_umap")),
