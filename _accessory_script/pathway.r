@@ -8,9 +8,11 @@ if (! file.exists(args[1])){
     stop("can NOT open yaml_file")
 }
 
-library(tidyverse)
-library(SummarizedExperiment)
-library(clusterProfiler)
+suppressPackageStartupMessages({
+    library(tidyverse)
+    library(SummarizedExperiment)
+    library(clusterProfiler)
+})
 
 # load data
 msigdb <- "~/../Desktop/reference/msigdb"

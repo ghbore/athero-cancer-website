@@ -8,8 +8,10 @@ if (! file.exists(args[1])){
     stop("can NOT open yaml_file")
 }
 
-library(tidyverse)
-library(SummarizedExperiment)
+suppressPackageStartupMessages({
+    library(tidyverse)
+    library(SummarizedExperiment)
+})
 
 # load data
 gmap <- list(
