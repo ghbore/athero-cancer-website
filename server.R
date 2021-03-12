@@ -163,8 +163,10 @@ function (input, output, session){
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~PC_1, y = ~PC_2, text = ~id,
-                hoverinfo = "text", type = "scatter", mode = "markers+text"
-            )
+                hoverinfo = "skip", type = "scatter", mode = "markers"
+            ) %>%
+            add_annotations(text = ~unname(id)) %>%
+            config(editable = TRUE)
     })
 
     output$gene_umap <- renderPlotly({
@@ -172,8 +174,10 @@ function (input, output, session){
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~UMAP_1, y = ~UMAP_2, text = ~id,
-                hoverinfo = "text", type = "scatter", mode = "markers+text"
-            )
+                hoverinfo = "skip", type = "scatter", mode = "markers"
+            ) %>%
+            add_annotations(text = ~unname(id)) %>%
+            config(editable = TRUE)
     })
 
     output$gene_quad <- renderPlotly({
@@ -257,8 +261,10 @@ function (input, output, session){
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~PC_1, y = ~PC_2, text = ~id,
-                hoverinfo = "text", type = "scatter", mode = "markers+text"
-            )
+                hoverinfo = "skip", type = "scatter", mode = "markers"
+            ) %>%
+            add_annotations(text = ~unname(id)) %>%
+            config(editable = TRUE)
     })
     
     output$pathway_umap <- renderPlotly({
@@ -266,28 +272,116 @@ function (input, output, session){
             id = DATASET_NAME_MAP$display[id]
         ) %>%
             plot_ly(x = ~UMAP_1, y = ~UMAP_2, text = ~id,
-                hoverinfo = "text", type = "scatter", mode = "markers+text"
-            )
+                hoverinfo = "skip", type = "scatter", mode = "markers"
+            ) %>%
+            add_annotations(text = ~unname(id)) %>%
+            config(editable = TRUE)
     })
     
+    pathway_sel_all <- reactiveVal()
+    pathway_sel_cur <- reactiveVal()
+    observeEvent({
+        input$athero_dataset_sel
+        input$cancer_dataset_sel
+        input$pathway_db_sel
+        event_data("plotly_doubleclick", "pathway_quad")
+    }, {
+        pathway_sel_cur(NULL)
+        pathway_sel_all(NULL)
+    })
+    observeEvent(event_data("plotly_click", "pathway_quad"), {
+        rst <- event_data("plotly_click", "pathway_quad")$customdata
+        if (!is.null(rst)){
+            pathway_sel_cur(rst)
+        }
+    })
+    observeEvent(pathway_sel_cur(), {
+        if (length(pathway_sel_cur()) == 0){
+            pathway_sel_all(NULL)
+            logging("clean ... # nevel run here")
+        }else if (pathway_sel_cur() %in% pathway_sel_all()){
+            pathway_sel_all(setdiff(
+                pathway_sel_all(),
+                pathway_sel_cur()
+            ))
+        }else {
+            pathway_sel_all(c(
+                pathway_sel_all(),
+                pathway_sel_cur()
+            ))
+        }
+        logging("pathway_sel_all = ", paste(pathway_sel_all(), collapse = ","))
+    })
     output$pathway_quad <- renderPlotly({
-        dplyr::select(PATHWAY_MATRIX[[input$pathway_db_sel]],
+        df <- dplyr::select(PATHWAY_MATRIX[[input$pathway_db_sel]],
+            ID,
             Description,
             x = all_of(input$athero_dataset_sel),
             y = all_of(input$cancer_dataset_sel)
         ) %>%
+            dplyr::filter(!is.na(x), !is.na(y)) %>%
             dplyr::mutate(Description =
                 str_remove(Description, "^GO_|^HALLMARK_")
-            ) %>%
-            plot_ly(x = ~x, y = ~y, text = ~Description,
-                hoverinfo = "text", type = "scatter", mode = "markers",
-                source = "pathway_quad"
-            ) %>%
+            )
+        p <- plot_ly(df, x = ~x, y = ~y, text = ~Description,
+            hoverinfo = "text", type = "scatter", mode = "markers",
+            marker = list(
+                color = ifelse(df$ID %in% pathway_sel_all(), "red", "black")
+            ),
+            source = "pathway_quad", customdata = df$ID
+        ) %>%
             layout(
                 xaxis = list(title = DATASET_NAME_MAP$display[input$athero_dataset_sel]),
                 yaxis = list(
                     title = DATASET_NAME_MAP$display[input$cancer_dataset_sel],
                     scaleanchor = "x"
+                )
+            ) %>%
+            config(editable = TRUE)
+        if (length(pathway_sel_all()) != 0){
+            p <- add_annotations(p,
+                x = ~x, y = ~y,
+                text = ~Description,
+                data = dplyr::filter(df, ID %in% pathway_sel_all()),
+                captureevents = TRUE
+            )
+        }
+        p
+    })
+    output$pathway_summary1 <- renderPlotly({
+        if (length(pathway_sel_cur()) == 0)
+            return(NULL)
+        df <- PATHWAY_MATRIX[[input$pathway_db_sel]] %>%
+            dplyr::filter(ID == pathway_sel_cur()) %>%
+            pivot_longer(!c(ID, Description),
+                names_to = "dataset",
+                values_to = "NES"
+            ) %>%
+            dplyr::filter(!is.na(NES)) %>%
+            dplyr::mutate(
+                label = DATASET_NAME_MAP$display[dataset],
+                class = case_when(
+                    dataset %in% ATHERO_DATASET ~ "athero",
+                    dataset %in% CANCER_DATASET ~ "cancer",
+                    TRUE ~ "NA"
+                ),
+                class = factor(class)
+            )
+        plot_ly(df, x = ~as.numeric(class), y = ~NES, split = ~class,
+            type = "box", hoverinfo = "skip",
+            showlegend = FALSE
+        ) %>%
+            add_markers(x = jitter(as.numeric(df$class)),
+                text = ~label,
+                hoverinfo = "text",
+                showlegend = FALSE
+            ) %>%
+            layout(
+                title = pathway_sel_cur(),
+                xaxis = list(
+                    title = "",
+                    ticktext = list("athero", "cancer"),
+                    tickvals = list(1, 2)
                 )
             )
     })

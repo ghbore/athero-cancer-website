@@ -22,12 +22,13 @@ dashboardPage(
     ),
     body = dashboardBody(
         tags$style(type = "text/css",
-            "#athero_dataset_volcano,#athero_dataset,#athero_pathway_volcano,
-             #cancer_dataset_volcano,#cancer_dataset,#cancer_pathway_volcano,
-             #gene_matrix_heatmap,#gene_dist_heatmap,
-             #gene_pca,#gene_umap,#gene_quad,
-             #pathway_matrix_heatmap,#pathway_dist_heatmap,
-             #pathway_pca,#pathway_umap,#pathway_quad
+            "
+            #athero_dataset_volcano,#athero_dataset,#athero_pathway_volcano,
+            #cancer_dataset_volcano,#cancer_dataset,#cancer_pathway_volcano,
+            #gene_matrix_heatmap,#gene_dist_heatmap,
+            #gene_pca,#gene_umap,#gene_quad,
+            #pathway_matrix_heatmap,#pathway_dist_heatmap,
+            #pathway_pca,#pathway_umap,#pathway_quad
                 {height: calc(100vh - 120px) !important;}
             "
         ),
@@ -74,7 +75,10 @@ dashboardPage(
                     tabPanel("dist", plotlyOutput("pathway_dist_heatmap")),
                     tabPanel("PCA", plotlyOutput("pathway_pca")),
                     tabPanel("UMAP", plotlyOutput("pathway_umap")),
-                    tabPanel("quadrant", plotlyOutput("pathway_quad")),
+                    tabPanel("quadrant", 
+                        box(plotlyOutput("pathway_quad"), headerBorder = FALSE),
+                        box(plotlyOutput("pathway_summary1"), headerBorder = FALSE)
+                    ),
                     type = "tabs"
                 )
             )
