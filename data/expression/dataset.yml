@@ -7,13 +7,13 @@ athero:
   STARNET-AOR_SYNTAX: STARNET_aor_syntax
   STARNET-MAM_Duke: STARNET_mam_duke
   STARNET-MAM_SYNTAX: STARNET_mam_syntax
-  Pan-CC-SMC_0: Pan_smc_0
-  Pan-CC-SMC_4: Pan_smc_4
-  Pan-CC-SMC_6: Pan_smc_6
-  Pan-CC-endo_9: Pan_endothelial_9
-  Pan-CC-fibro_1: Pan_fibroblast_1
-  Pan-CC-fibro_7: Pan_fibroblast_7
-  Pan-CC-macro_10: Pan_macrophage_10
+  # Pan-CC-SMC_0: Pan_smc_0
+  # Pan-CC-SMC_4: Pan_smc_4
+  # Pan-CC-SMC_6: Pan_smc_6
+  # Pan-CC-endo_9: Pan_endothelial_9
+  # Pan-CC-fibro_1: Pan_fibroblast_1
+  # Pan-CC-fibro_7: Pan_fibroblast_7
+  # Pan-CC-macro_10: Pan_macrophage_10
 cancer:
   - BLCA: BLCA
   - BRCA
