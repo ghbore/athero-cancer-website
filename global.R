@@ -96,42 +96,4 @@ PATHWAY_DIM <- load_or_save("data/pathway-dim.rda", {
     })
 })
 
-DATASET_SIMILARITY <- list(
-    pathway = lapply(GENESET, function (db, nms){
-        ds <- c(ATHERO_PATHWAY[[db]], CANCER_PATHWAY[[db]])
-        name <- lapply(ds, function (d) rowData(d)$Description) %>%
-            Reduce(union, .)
-        mtx <- lapply(ds, function (d)
-                rep(0, length(name)) %>%
-                    `[<-`(match(rowData(d)$Description, name),
-                        value = assay(d)$NES
-                    )
-            ) %>%
-            Reduce(cbind, .) %>%
-            `colnames<-`(nms) %>%
-            `rownames<-`(str_remove(name, "^GO_|^HALLMARK_") %>%
-                str_replace_all("_", " ") %>%
-                str_trunc(60)
-            ) %>%
-            as.matrix()
-        mtx[is.na(mtx)] <- 0
-        rh <- t(mtx) %>%
-            scale() %>%
-            `[<-`(is.na(.), value = 0) %>%
-            t() %>%
-            dist() %>%
-            hclust()
-        cd <- scale(mtx) %>%
-            `[<-`(is.na(.), value = 0) %>%
-            t() %>%
-            dist()
-        ch <- hclust(cd)
-        list(
-            dist = as.matrix(cd)[ch$order, ch$order],
-            matrix = mtx[rh$order, ch$order] %>% as.matrix()
-        )
-    }, nms = c(names(ATHERO_DATASET), names(CANCER_DATASET))) %>%
-        setNames(GENESET)
-)
-
 logging("finish calculating similarity matrix")
