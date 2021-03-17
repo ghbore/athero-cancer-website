@@ -75,8 +75,8 @@ dashboardPage(
                     tabPanel("PCA", plotlyOutput("pathway_pca")),
                     tabPanel("UMAP", plotlyOutput("pathway_umap")),
                     tabPanel("quadrant", 
-                        box(plotlyOutput("pathway_quad"), width = 8, headerBorder = FALSE),
-                        box(plotlyOutput("pathway_summary1"), width = 4, headerBorder = FALSE)
+                        column(width = 8, plotlyOutput("pathway_quad")),
+                        column(width = 4, plotlyOutput("pathway_summary1"))
                     ),
                     type = "tabs"
                 )

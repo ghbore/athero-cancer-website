@@ -127,13 +127,13 @@ function (input, output, session){
             x = colnames(mtx),
             y = rownames(mtx),
             z = mtx,
-            colors = colorRamp(c("blue", "yellow", "red")),
+            colors = colorRamp(c("blue", "red")),
             type = "heatmap"
         ) %>%
-            add_trace(x = ~x, y = ~y, text = ~rank,
-                data = odr,
-                hoverinfo = "none",
-                type = "scatter", mode = "text"
+            add_annotations(x = ~x, y = ~y, text = ~rank,
+                xanchor = "center", showarrow = FALSE,
+                font = list(color = "gray"),
+                data = odr
             ) %>%
             layout(
                 xaxis = list(title = ""),
@@ -142,41 +142,65 @@ function (input, output, session){
     })
     
     output$gene_pca <- renderPlotly({
-        dplyr::mutate(GENE_DIM$pca,
+        d <- dplyr::mutate(GENE_DIM$pca,
             class = case_when(
                 id %in% ATHERO_DATASET ~ "athero",
                 id %in% CANCER_DATASET ~ "cancer",
                 TRUE ~ "NA"
             ),
+            color = ifelse(class == "athero", "red", "black"),
             id = DATASET_NAME_MAP$display[id]
+        )
+        plot_ly(d, x = ~PC_1, y = ~PC_2, text = ~id,
+            hoverinfo = "skip", type = "scatter", mode = "markers",
+            marker = list(color = ~color)
         ) %>%
-            plot_ly(x = ~PC_1, y = ~PC_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers",
-                marker = list(
-                    color = ~ifelse(class == "athero", "red", "black")
-                )
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "red",
+                font = list(color = "red"),
+                data = filter(d, color == "red")
             ) %>%
-            add_annotations(text = ~unname(id)) %>%
-            config(editable = TRUE)
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "black",
+                font = list(color = "black"),
+                data = filter(d, color == "black")
+            ) %>%
+            config(edits = list(
+                annotationTail = TRUE
+            ))
     })
 
     output$gene_umap <- renderPlotly({
-        dplyr::mutate(GENE_DIM$umap,
+        d <- dplyr::mutate(GENE_DIM$umap,
             class = case_when(
                 id %in% ATHERO_DATASET ~ "athero",
                 id %in% CANCER_DATASET ~ "cancer",
                 TRUE ~ "NA"
             ),
+            color = ifelse(class == "athero", "red", "black"),
             id = DATASET_NAME_MAP$display[id]
+        )
+        plot_ly(d, x = ~UMAP_1, y = ~UMAP_2, text = ~id,
+            hoverinfo = "skip", type = "scatter", mode = "markers",
+            marker = list(color = ~color)
         ) %>%
-            plot_ly(x = ~UMAP_1, y = ~UMAP_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers",
-                marker = list(
-                    color = ~ifelse(class == "athero", "red", "black")
-                )
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "red",
+                font = list(color = "red"),
+                data = filter(d, color == "red")
             ) %>%
-            add_annotations(text = ~unname(id)) %>%
-            config(editable = TRUE)
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "black",
+                font = list(color = "black"),
+                data = filter(d, color == "black")
+            ) %>%
+            config(edits = list(
+                annotationTail = TRUE
+            ))
     })
 
     output$gene_quad <- renderPlotly({
@@ -210,7 +234,7 @@ function (input, output, session){
             x = colnames(mtx),
             y = rownames(mtx),
             z = mtx,
-            colors = colorRamp(c("blue", "yellow", "red")),
+            colors = colorRamp(c("blue", "red")),
             type = "heatmap"
         ) %>%
             layout(
@@ -241,13 +265,13 @@ function (input, output, session){
             x = colnames(mtx),
             y = rownames(mtx),
             z = mtx,
-            colors = colorRamp(c("blue", "yellow", "red")),
+            colors = colorRamp(c("blue", "red")),
             type = "heatmap"
         ) %>%
-            add_trace(x = ~x, y = ~y, text = ~rank,
-                data = odr,
-                hoverinfo = "none",
-                type = "scatter", mode = "text"
+            add_annotations(x = ~x, y = ~y, text = ~rank,
+                xanchor = "center", showarrow = FALSE,
+                font = list(color = "gray"),
+                data = odr
             ) %>%
             layout(
                 xaxis = list(title = ""),
@@ -256,41 +280,65 @@ function (input, output, session){
     })
     
     output$pathway_pca <- renderPlotly({
-        dplyr::mutate(PATHWAY_DIM[[input$pathway_db_sel]]$pca,
+        d <- dplyr::mutate(PATHWAY_DIM[[input$pathway_db_sel]]$pca,
             class = case_when(
                 id %in% ATHERO_DATASET ~ "athero",
                 id %in% CANCER_DATASET ~ "cancer",
                 TRUE ~ "NA"
             ),
+            color = ifelse(class == "athero", "red", "black"),
             id = DATASET_NAME_MAP$display[id]
+        )
+        plot_ly(d, x = ~PC_1, y = ~PC_2, text = ~id,
+            hoverinfo = "skip", type = "scatter", mode = "markers",
+            marker = list(color = ~color)
         ) %>%
-            plot_ly(x = ~PC_1, y = ~PC_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers",
-                marker = list(
-                    color = ~ifelse(class == "athero", "red", "black")
-                )
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "red",
+                font = list(color = "red"),
+                data = filter(d, color == "red")
             ) %>%
-            add_annotations(text = ~unname(id)) %>%
-            config(editable = TRUE)
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "black",
+                font = list(color = "black"),
+                data = filter(d, color == "black")
+            ) %>%
+            config(edits = list(
+                annotationTail = TRUE
+            ))
     })
     
     output$pathway_umap <- renderPlotly({
-        dplyr::mutate(PATHWAY_DIM[[input$pathway_db_sel]]$umap,
+        d <- dplyr::mutate(PATHWAY_DIM[[input$pathway_db_sel]]$umap,
             class = case_when(
                 id %in% ATHERO_DATASET ~ "athero",
                 id %in% CANCER_DATASET ~ "cancer",
                 TRUE ~ "NA"
             ),
+            color = ifelse(class == "athero", "red", "black"),
             id = DATASET_NAME_MAP$display[id]
+        )
+        plot_ly(d, x = ~UMAP_1, y = ~UMAP_2, text = ~id,
+            hoverinfo = "skip", type = "scatter", mode = "markers",
+            marker = list(color = ~color)
         ) %>%
-            plot_ly(x = ~UMAP_1, y = ~UMAP_2, text = ~id,
-                hoverinfo = "skip", type = "scatter", mode = "markers",
-                marker = list(
-                    color = ~ifelse(class == "athero", "red", "black")
-                )
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "red",
+                font = list(color = "red"),
+                data = filter(d, color == "red")
             ) %>%
-            add_annotations(text = ~unname(id)) %>%
-            config(editable = TRUE)
+            add_annotations(
+                text = ~unname(id),
+                arrowcolor = "black",
+                font = list(color = "black"),
+                data = filter(d, color == "black")
+            ) %>%
+            config(edits = list(
+                annotationTail = TRUE
+            ))
     })
     
     pathway_sel_all <- reactiveVal()
@@ -312,8 +360,8 @@ function (input, output, session){
     })
     observeEvent(pathway_sel_cur(), {
         if (length(pathway_sel_cur()) == 0){
+            # never run here, weird
             pathway_sel_all(NULL)
-            logging("clean ... # nevel run here")
         }else if (pathway_sel_cur() %in% pathway_sel_all()){
             pathway_sel_all(setdiff(
                 pathway_sel_all(),
@@ -325,7 +373,6 @@ function (input, output, session){
                 pathway_sel_cur()
             ))
         }
-        logging("pathway_sel_all = ", paste(pathway_sel_all(), collapse = ","))
     })
     output$pathway_quad <- renderPlotly({
         df <- dplyr::select(PATHWAY_MATRIX[[input$pathway_db_sel]],
@@ -352,7 +399,9 @@ function (input, output, session){
                     scaleanchor = "x"
                 )
             ) %>%
-            config(editable = TRUE)
+            config(edits = list(
+                annotationTail = TRUE
+            ))
         if (length(pathway_sel_all()) != 0){
             p <- add_annotations(p,
                 x = ~x, y = ~y,
@@ -392,7 +441,7 @@ function (input, output, session){
                 showlegend = FALSE
             ) %>%
             layout(
-                title = pathway_sel_cur(),
+                title = str_remove(df$Description[1], "^GO_|^HALLMARK_"),
                 xaxis = list(
                     title = "",
                     ticktext = list("athero", "cancer"),
