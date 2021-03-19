@@ -127,6 +127,7 @@ function (input, output, session){
             x = colnames(mtx),
             y = rownames(mtx),
             z = mtx,
+            hovertemplate = "%{x}<br />%{y}<br />dist: %{z}",
             colors = colorRamp(c("blue", "red")),
             type = "heatmap"
         ) %>%
@@ -234,6 +235,7 @@ function (input, output, session){
             x = colnames(mtx),
             y = rownames(mtx),
             z = mtx,
+            hovertemplate = "%{x}<br />%{y}<br />NES: %{z}",
             colors = colorRamp(c("blue", "red")),
             type = "heatmap"
         ) %>%
