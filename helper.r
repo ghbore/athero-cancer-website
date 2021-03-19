@@ -115,11 +115,57 @@ combine_pathway_all <- function (lists, new_names = names(lists)){
     return(mtx)
 }
 
-scale_cluster_redim <- function (df){
+combine_se <- function (lists,
+    row_keys = c("ensembl", "symbol", "entrez", "ID", "Description"),
+    col_keys = list(
+        stat = c("logFC", "logHR", "logOR", "cor", "NES"),
+        pval = c("pval", "pvalue")
+    ),
+    new_names = names(lists)
+){
+    if (is.null(new_names)){
+        new_names <- as.character(seq(lists))
+    }
+    kv <- lapply(lists, function (o) rowData(o) %>%
+        as_tibble() %>%
+        dplyr::select(any_of(row_keys))
+    ) %>%
+        bind_rows() %>%
+        distinct() %>%
+        as.data.frame() %>%
+        `rownames<-`(apply(., 1, paste, collapse = "-"))
+    mtx <- lapply(col_keys, function (k){
+        lapply(lists, function (o){
+            v <- rep(NA, nrow(kv))
+            k0 <- rowData(o) %>%
+                as_tibble() %>%
+                dplyr::select(any_of(row_keys)) %>%
+                apply(1, paste, collapse = "-")
+            v0 <- assay(o) %>%
+                as_tibble() %>%
+                dplyr::select(any_of(k)) %>%
+                `[`(i =, j = 1, drop = TRUE)
+            v[match(k0, rownames(kv))] <- v0
+            return(v)
+        }) %>%
+            as.data.frame() %>%
+            `colnames<-`(new_names)
+    })
+
+    rownames(kv) <- NULL
+    SummarizedExperiment(
+        lapply(mtx, as, Class = "DataFrame"),
+        rowData = as(kv, "DataFrame"),
+        colData = tibble(name = new_names) %>%
+            as("DataFrame")
+    )
+}
+
+scale_cluster_redim <- function (df, .scale = TRUE){
     x <- dplyr::select_if(df, is.numeric) %>%
         `[<-`(is.na(.), value = 0) %>%
         `[`(i =, j = apply(., 2, function (x) any(x != x[1])), drop = FALSE) %>%
-        scale()
+        scale(center = FALSE, scale = .scale)
     d <- dist(t(x))
     cluster <- hclust(d)
     pca <- prcomp(x, retx = FALSE, center = FALSE) %>%
