@@ -115,11 +115,11 @@ combine_pathway_all <- function (lists, new_names = names(lists)){
     return(mtx)
 }
 
-scale_cluster_redim <- function (df){
+scale_cluster_redim <- function (df, .scale = TRUE){
     x <- dplyr::select_if(df, is.numeric) %>%
         `[<-`(is.na(.), value = 0) %>%
         `[`(i =, j = apply(., 2, function (x) any(x != x[1])), drop = FALSE) %>%
-        scale()
+        scale(center = FALSE, scale = .scale)
     d <- dist(t(x))
     cluster <- hclust(d)
     pca <- prcomp(x, retx = FALSE, center = FALSE) %>%
